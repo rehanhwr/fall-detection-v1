@@ -1,8 +1,14 @@
-import torch
+import argparse
 from collections import OrderedDict
+import torch
 from torch import nn
 from torch import optim
-import argparse
+from torch.utils.data import DataLoader
+from torchvision import datasets
+from torchvision import transforms
+
+data_path_train = 'data/train/'
+data_path_validation = 'data/validation/'
 
 def main(args):
   model = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
@@ -28,7 +34,11 @@ def main(args):
   #send model to GPU
   if args.gpu:
     model.to('cuda')
-      
+  
+  # TODO: load using script
+  trainLoader = load_dataset(data_path_train)
+  validLoader = load_dataset(data_path_validation)
+
   for e in range(epochs):
     epoch +=1
     print(epoch)
@@ -100,6 +110,23 @@ def parse_args():
     args.gpu = False
   
   return args
+
+
+def load_dataset(data_path):
+  dataset = datasets.ImageFolder(
+    root=data_path,
+    transform=transforms.ToTensor()
+  )
+  data_loader = DataLoader(
+    dataset,
+    batch_size=64,
+    num_workers=0,
+    shuffle=True
+  )
+
+  return data_loader
+
+
 
 if __name__ == '__main__':
   args = parse_args()
