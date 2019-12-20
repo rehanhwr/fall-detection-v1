@@ -14,7 +14,7 @@ def main(args):
   model = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
   model.eval()
 
-  classifier =nn.Sequential(OrderedDict([('fc1', nn.Linear(512, 256)),
+  classifier =nn.Sequential(OrderedDict([('fc1', nn.Linear(13, 256)),
                             ('relu', nn.ReLU()), 
                             ('dropout', nn.Dropout(p=0.337)),
                             ('fc2', nn.Linear(256, 3)),
@@ -115,7 +115,12 @@ def parse_args():
 def load_dataset(data_path):
   dataset = datasets.ImageFolder(
     root=data_path,
-    transform=transforms.ToTensor()
+    transform=transforms.Compose([
+      transforms.Resize(256),
+      transforms.CenterCrop(224),
+      transforms.ToTensor(),
+      transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
   )
   data_loader = DataLoader(
     dataset,
