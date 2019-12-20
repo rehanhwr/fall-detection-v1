@@ -14,10 +14,10 @@ def main(args):
   model = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
   model.eval()
 
-  classifier =nn.Sequential(OrderedDict([('fc1', nn.Linear(13, 256)),
+  classifier =nn.Sequential(OrderedDict([('fc1', nn.Linear(13, 128)),
                             ('relu', nn.ReLU()), 
                             ('dropout', nn.Dropout(p=0.337)),
-                            ('fc2', nn.Linear(256, 3)),
+                            ('fc2', nn.Linear(128, 3)),
                             ('output', nn.LogSoftmax(dim=1))
                           ]))
   model.classifier = classifier
