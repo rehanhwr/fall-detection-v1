@@ -14,10 +14,10 @@ def main(args):
   model = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
   model.eval()
 
-  classifier =nn.Sequential(OrderedDict([('fc1', nn.Linear(13, 128)),
+  classifier =nn.Sequential(OrderedDict([('fc1', nn.Linear(13, 8)),
                             ('relu', nn.ReLU()), 
                             ('dropout', nn.Dropout(p=0.337)),
-                            ('fc2', nn.Linear(128, 3)),
+                            ('fc2', nn.Linear(8, 3)),
                             ('output', nn.LogSoftmax(dim=1))
                           ]))
   model.classifier = classifier
@@ -68,8 +68,8 @@ def train (model, loader, criterion, gpu):
     optimizer.step()
     current_loss += loss.item()*train.size(0)
     current_correct += torch.sum(preds == y_train.data)
-  epoch_loss = current_loss / len(trainLoader.dataset)
-  epoch_acc = current_correct.double() / len(trainLoader.dataset)
+  epoch_loss = current_loss / len(loader.dataset)
+  epoch_acc = current_correct.double() / len(loader.dataset)
       
   return epoch_loss, epoch_acc
 
@@ -87,8 +87,8 @@ def validation (model, loader, criterion, gpu):
     equal = (output.max(dim=1)[1] == y_valid.data)
     valid_correct += torch.sum(equal)#type(torch.FloatTensor)
   
-  epoch_loss = valid_loss / len(validLoader.dataset)
-  epoch_acc = valid_correct.double() / len(validLoader.dataset)
+  epoch_loss = valid_loss / len(loader.dataset)
+  epoch_acc = valid_correct.double() / len(loader.dataset)
   
   return epoch_loss, epoch_acc
 
@@ -136,3 +136,4 @@ def load_dataset(data_path):
 if __name__ == '__main__':
   args = parse_args()
   main(args)
+  print("FINISHED")
