@@ -57,7 +57,7 @@ def main(args):
   # Create training and validation dataloaders
   dataloaders_dict = {x: DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True, num_workers=4) for x in ['train', 'val']}
 
- 
+  print('Device used: {}'.format(device))
   
   # Send the model to GPU (Optimizer)
   model_ft = model_ft.to(device)
@@ -100,6 +100,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs=25, is_ince
     best_acc = 0.0
 
     for epoch in range(num_epochs):
+        since_epoch = time.time()
+
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         print('-' * 10)
 
@@ -160,6 +162,10 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs=25, is_ince
                 best_model_wts = copy.deepcopy(model.state_dict())
             if phase == 'val':
                 val_acc_history.append(epoch_acc)
+
+        time_elapsed_epoch = time.time() - since_epoch
+        print('One epoch complete in {:.0f}m {:.0f}s'.format(time_elapsed_epoch // 60, time_elapsed_epoch % 60))
+        print()
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
