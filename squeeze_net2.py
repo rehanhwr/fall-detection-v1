@@ -6,6 +6,8 @@ from torch import optim
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision import transforms
+import numpy as np
+import matplotlib.pyplot as plt
 import os
 import time
 import copy
@@ -87,14 +89,19 @@ def main(args):
   criterion = nn.CrossEntropyLoss()
 
   # Train and evaluate
-  model_ft, hist = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs, is_inception=(model_name=="inception"))
+  model_ft, train_loss, val_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs, is_inception=(model_name=="inception"))
   torch.save(model_ft, "./saved_model/model_ft")
+  print('Train Loss: {}'.format(train_loss))
+  print('Val Acc: {}'.format(val_acc))
+  plot_loss_acc(train_loss, val_acc, num_epochs)
+
 
 
 def train_model(model, dataloaders, criterion, optimizer, num_epochs=25, is_inception=False):
     since = time.time()
 
     val_acc_history = []
+    train_loss_history = []
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
@@ -162,6 +169,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs=25, is_ince
                 best_model_wts = copy.deepcopy(model.state_dict())
             if phase == 'val':
                 val_acc_history.append(epoch_acc)
+            else:
+                train_loss_history.append(epoch_loss)
 
         time_elapsed_epoch = time.time() - since_epoch
         print('One epoch complete in {:.0f}m {:.0f}s'.format(time_elapsed_epoch // 60, time_elapsed_epoch % 60))
@@ -173,7 +182,7 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs=25, is_ince
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    return model, val_acc_history
+    return model, train_loss_history, val_acc_history
 
 def parse_args():
   parser = argparse.ArgumentParser(description='PyTorch Example')
@@ -194,6 +203,25 @@ def parse_args():
     args.gpu = False
   
   return args
+
+
+def plot_loss_acc(losses, accuracies, num_epochs):
+  # lhist = []
+  # ahist = []
+
+  # lhist = [l.cpu().numpy() for l in losses]
+  # ahist = [a.cpu().numpy() for a in accuracies]
+
+  plt.title("Training Loss and Validation Accuracy")
+  plt.xlabel("Epochs")
+  plt.ylabel("Loss/Accuracy")
+  plt.plot(range(1,num_epochs+1),accuracies,label="Val Acc")
+  plt.plot(range(1,num_epochs+1),losses,label="Train Loss")
+  plt.ylim((0,1.))
+  plt.xticks(np.arange(1, num_epochs+1, 1.0))
+  plt.legend()
+  plt.show()
+
 
 def save_points(model, path):
   torch.save(model, path)
