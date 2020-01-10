@@ -19,7 +19,6 @@ num_classes = 3
 input_size = 224
 batch_size=10
 feature_extract=False
-num_epochs=3
 model_name='squeezenet1_0'
 # Detect if we have a GPU available
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -27,6 +26,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def main(args):
   data_dir = args.dataset_name
+  num_epochs = args.epoch
   print(data_dir)
 
   model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
@@ -97,7 +97,7 @@ def main(args):
 
 
 
-def train_model(model, dataloaders, criterion, optimizer, num_epochs=25, is_inception=False):
+def train_model(model, dataloaders, criterion, optimizer, num_epochs, is_inception=False):
     since = time.time()
 
     val_acc_history = []
@@ -191,6 +191,7 @@ def parse_args():
   parser.add_argument('-gpu', action='store_false',
                       help='Disable CUDA')
   parser.add_argument("-dn", "--dataset-name", type=str, default='data_dummy/')
+  parser.add_argument("-e", "--epoch", type=int, default=10)
 
   args = parser.parse_args()
   args.device = None
