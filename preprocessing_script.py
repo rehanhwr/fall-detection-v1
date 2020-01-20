@@ -61,12 +61,12 @@ def renaming_images_with_class_name():
   lst = os.listdir('./data/all/')
   entries = os.listdir('./data/train/1/')
   for entry in entries:
-    new_entry_name = entries_to_name(entries_to_name) + '_' + clas + EXTENSION
+    new_entry_name = entries_to_name(entry) + '_1' + EXTENSION
     if new_entry_name not in lst:
       entry_path = './data/train/1/' + entry
       img = Image.open(entry_path)
       
-      new_path = "./data/all/" + entries_to_name(entry) + '_1' + EXTENSION 
+      new_path = "./data/all/" + new_entry_name
       img = img.save(new_path)
 
 if __name__ == '__main__':
