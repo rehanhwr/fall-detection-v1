@@ -6,7 +6,7 @@ from utils import parse_args
 from utils import plot_loss_acc
 from utils import save_points
 from utils import set_parameter_requires_grad
-from utils import load_dataset
+from utils import load_split_train_test
 import time
 import copy
 
@@ -15,8 +15,9 @@ data_path_train = root_path + 'train/'
 data_path_validation = root_path + 'validation/'
 num_classes = 3
 input_size = 224
-batch_size=10
-model_name='squeezenet1_0'
+batch_size = 64
+validation_size = .15
+model_name = 'squeezenet1_0'
 save_path = "./saved_model/model_ft"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -41,7 +42,7 @@ def main(args):
   # print(model)
 
   # Create training and validation dataloaders
-  dataloaders_dict = load_dataset(data_dir, batch_size, input_size)
+  dataloaders_dict = load_split_train_test(data_dir, batch_size, input_size, validation_size)
   
   # Send the model to GPU (Optimizer)
   model_ft = model_ft.to(device)
@@ -73,6 +74,7 @@ def main(args):
   # Train and evaluate
   model_ft, train_loss, val_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs)
   save_points(model_ft, save_path)
+  print()
   print('Train Loss: {}'.format(train_loss))
   print('Val Acc: {}'.format(val_acc))
   plot_loss_acc(train_loss, val_acc, num_epochs)
@@ -137,12 +139,12 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
 
       # deep copy the model
       if phase == 'val' and epoch_acc > best_acc:
-          best_acc = epoch_acc
-          best_model_wts = copy.deepcopy(model.state_dict())
+        best_acc = epoch_acc
+        best_model_wts = copy.deepcopy(model.state_dict())
       if phase == 'val':
-          val_acc_history.append(epoch_acc)
+        val_acc_history.append(epoch_acc.item())
       else:
-          train_loss_history.append(epoch_loss)
+        train_loss_history.append(epoch_loss)
 
     time_elapsed_epoch = time.time() - since_epoch
     print('One epoch complete in {:.0f}m {:.0f}s'.format(time_elapsed_epoch // 60, time_elapsed_epoch % 60))

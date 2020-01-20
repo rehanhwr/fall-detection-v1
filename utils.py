@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision import transforms
 import os
+from torch.utils.data.sampler import SubsetRandomSampler
+
 
 
 def main():
@@ -13,7 +15,7 @@ def main():
 
 def parse_args():
   parser = argparse.ArgumentParser(description='PyTorch Example')
-  parser.add_argument("-dn", "--dataset-name", type=str, default='data_dummy/')
+  parser.add_argument("-dn", "--dataset-name", type=str, default='./data_dummy/classes/')
   parser.add_argument("-e", "--epoch", type=int, default=1)
   parser.add_argument("-f", "--feature-extract", action='store_true')
 
@@ -78,5 +80,50 @@ def load_dataset(data_dir, batch_size, input_size):
   return dataloaders_dict
 
 
+def load_split_train_test(datadir, batch_size=64, input_size=224, valid_size = .15):
+  print("Initializing Datasets and Dataloaders...")
+
+  data_transforms = {
+    'train': transforms.Compose([
+      transforms.RandomResizedCrop(input_size),
+      transforms.RandomHorizontalFlip(),
+      transforms.ToTensor(),
+      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]),
+    'val': transforms.Compose([
+      transforms.Resize(input_size),
+      transforms.CenterCrop(input_size),
+      transforms.ToTensor(),
+      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]),
+  }
+
+  train_data = datasets.ImageFolder(datadir, transform=data_transforms['train'])
+  test_data = datasets.ImageFolder(datadir, transform=data_transforms['val'])
+
+  num_train = len(train_data)
+  indices = list(range(num_train))
+  split = int(np.floor(valid_size * num_train))
+  np.random.seed(7)
+  np.random.shuffle(indices)
+
+  train_idx, test_idx = indices[split:], indices[:split]
+
+  train_sampler = SubsetRandomSampler(train_idx)
+  test_sampler = SubsetRandomSampler(test_idx)
+
+  trainloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
+  testloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
+
+  dataloaders_dict = {
+    'train': trainloader,
+    'val': testloader
+  }
+
+  return dataloaders_dict
+
+
+
 if __name__ == '__main__':
   main()
+
