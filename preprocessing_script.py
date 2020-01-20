@@ -45,8 +45,12 @@ def renaming_images_with_class_name():
   phases = ['train/', 'val/']
   classes = ["-1", "0", "1"]
 
+  move = False
   for phase in phases:
     for clas in classes:
+      if phase == 'train/' and clas != '1':
+        continue
+
       image_path = root_dir + phase + clas + "/"
       entries = os.listdir(image_path)
 
@@ -54,10 +58,14 @@ def renaming_images_with_class_name():
         entry_path = image_path + entry
         img = Image.open(entry_path)
 
-        new_path = "./data/all/" + entries_to_name(entry) + '_' + clas + EXTENSION 
-        img = img.save(new_path)
-        print('Saved to ', new_path)
-  
+        if move:
+          new_path = "./data/all/" + entries_to_name(entry) + '_' + clas + EXTENSION 
+          img = img.save(new_path)
+          print('Saved to ', new_path)
+
+        if entry == 'adl-23-cam0-rgb-156.png':
+          move = True
+
 
 if __name__ == '__main__':
   renaming_images_with_class_name()
