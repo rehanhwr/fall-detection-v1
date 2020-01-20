@@ -2,14 +2,11 @@ from collections import OrderedDict
 import torch
 from torch import nn
 from torch import optim
-from torch.utils.data import DataLoader
-from torchvision import datasets
-from torchvision import transforms
 from utils import parse_args
 from utils import plot_loss_acc
 from utils import save_points
 from utils import set_parameter_requires_grad
-import os
+from utils import load_dataset
 import time
 import copy
 
@@ -23,6 +20,7 @@ model_name='squeezenet1_0'
 save_path = "./saved_model/model_ft"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print('Device used: ', device)
 
 
 def main(args):
@@ -32,38 +30,18 @@ def main(args):
 
   print('Dataset dir: ', data_dir)
 
-  model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
+  if feature_extract:
+    model_ft = torch.load(save_path)
+  else:
+    model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
+
   model_ft = set_parameter_requires_grad(model_ft, feature_extract)
   model_ft.classifier[1] = nn.Conv2d(512, num_classes, kernel_size=(1,1), stride=(1,1))
   model_ft.num_classes = num_classes
   # print(model)
 
-  # Data augmentation and normalization for training
-  # Just normalization for validation
-  data_transforms = {
-    'train': transforms.Compose([
-      transforms.RandomResizedCrop(input_size),
-      transforms.RandomHorizontalFlip(),
-      transforms.ToTensor(),
-      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-    'val': transforms.Compose([
-      transforms.Resize(input_size),
-      transforms.CenterCrop(input_size),
-      transforms.ToTensor(),
-      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-  }
-
-  print("Initializing Datasets and Dataloaders...")
-
-  # Create training and validation datasets
-  image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'val']}
-
   # Create training and validation dataloaders
-  dataloaders_dict = {x: DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True, num_workers=4) for x in ['train', 'val']}
-
-  print('Device used: {}'.format(device))
+  dataloaders_dict = load_dataset(data_dir, batch_size, input_size)
   
   # Send the model to GPU (Optimizer)
   model_ft = model_ft.to(device)

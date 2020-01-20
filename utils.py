@@ -2,6 +2,10 @@ import torch
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
+from torch.utils.data import DataLoader
+from torchvision import datasets
+from torchvision import transforms
+import os
 
 
 def main():
@@ -45,6 +49,33 @@ def set_parameter_requires_grad(model, feature_extracting):
       param.requires_grad = False
 
   return model
+
+
+def load_dataset(data_dir, batch_size, input_size):
+  # Data augmentation and normalization for training
+  # Just normalization for validation
+  data_transforms = {
+    'train': transforms.Compose([
+      transforms.RandomResizedCrop(input_size),
+      transforms.RandomHorizontalFlip(),
+      transforms.ToTensor(),
+      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]),
+    'val': transforms.Compose([
+      transforms.Resize(input_size),
+      transforms.CenterCrop(input_size),
+      transforms.ToTensor(),
+      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]),
+  }
+
+  print("Initializing Datasets and Dataloaders...")
+
+  # Create training and validation datasets
+  image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'val']}
+  dataloaders_dict = {x: DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True, num_workers=4) for x in ['train', 'val']}
+
+  return dataloaders_dict
 
 
 if __name__ == '__main__':
