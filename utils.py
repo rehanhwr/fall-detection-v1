@@ -11,6 +11,7 @@ def parse_args():
   parser = argparse.ArgumentParser(description='PyTorch Example')
   parser.add_argument("-dn", "--dataset-name", type=str, default='data_dummy/')
   parser.add_argument("-e", "--epoch", type=int, default=1)
+  parser.add_argument("-f", "--feature-extract", action='store_true')
 
   args = parser.parse_args()
   return args

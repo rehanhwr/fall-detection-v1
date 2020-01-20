@@ -18,7 +18,6 @@ data_path_validation = root_path + 'validation/'
 num_classes = 3
 input_size = 224
 batch_size=10
-feature_extract=False
 model_name='squeezenet1_0'
 save_path = "./saved_model/model_ft"
 
@@ -28,6 +27,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def main(args):
   data_dir = args.dataset_name
   num_epochs = args.epoch
+  feature_extract = args.feature_extract
+
   print(data_dir)
 
   model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
@@ -39,16 +40,16 @@ def main(args):
   # Just normalization for validation
   data_transforms = {
     'train': transforms.Compose([
-        transforms.RandomResizedCrop(input_size),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+      transforms.RandomResizedCrop(input_size),
+      transforms.RandomHorizontalFlip(),
+      transforms.ToTensor(),
+      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ]),
     'val': transforms.Compose([
-        transforms.Resize(input_size),
-        transforms.CenterCrop(input_size),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+      transforms.Resize(input_size),
+      transforms.CenterCrop(input_size),
+      transforms.ToTensor(),
+      transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ]),
   }
 
@@ -73,15 +74,16 @@ def main(args):
   params_to_update = model_ft.parameters()
   print("Params to learn:")
   if feature_extract:
-      params_to_update = []
-      for name,param in model_ft.named_parameters():
-          if param.requires_grad == True:
-              params_to_update.append(param)
-              print("\t",name)
+    print("HOHOHO")
+    params_to_update = []
+    for name,param in model_ft.named_parameters():
+      if param.requires_grad == True:
+        params_to_update.append(param)
+        # print("\t",name)
   else:
-      for name,param in model_ft.named_parameters():
-          if param.requires_grad == True:
-              print("\t",name)
+    for name,param in model_ft.named_parameters():
+      if param.requires_grad == True:
+        print("\t",name)
 
   # Observe that all parameters are being optimized
   optimizer_ft = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
