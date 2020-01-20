@@ -40,6 +40,7 @@ def entries_to_name(entries_name):
 
 
 # working in data, not dummy data
+# @deprecated, use alternatives instead
 def renaming_images_with_class_name():
   root_dir = "./data/"
   phases = ['train/', 'val/']
