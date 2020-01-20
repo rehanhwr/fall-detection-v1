@@ -1,3 +1,4 @@
+import os
 import csv
 from PIL import Image
 
@@ -31,5 +32,31 @@ def separate_adl_fall_to_classes:
       # print(row[0],row[1],row[2],)
 
 
+# (takes time) : 3 classes --> 1 dataset (each image has class name) --> random split 85-15 --> save to traditional structure 
+# (alternatives) : 1 dataset (already combined) --> random split --> save in python strcuture or tensor!
+
+def entries_to_name(entries_name):
+  return entries_name.split('.')[0]
+
+
+# working in data, not dummy data
+def renaming_images_with_class_name():
+  root_dir = "./data/"
+  phases = ['train/', 'val/']
+  classes = ["-1/", "0/", "1"]
+
+  for phase in phases:
+    for clas in classes:
+      image_path = root_dir + phase + clas + "/"
+      entries = os.listdir(image_path)
+
+      for entry in entries:
+        entry_path = image_path + entry
+        img = Image.open(entry_path)
+
+        new_path = "./data/all/" + entries_to_name(entry) + '_' + clas + EXTENSION 
+        img = img.save(new_path)
+  
+
 if __name__ == '__main__':
-  pass
+  renaming_images_with_class_name()
