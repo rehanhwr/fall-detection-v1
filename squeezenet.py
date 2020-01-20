@@ -8,6 +8,7 @@ from torchvision import transforms
 from utils import parse_args
 from utils import plot_loss_acc
 from utils import save_points
+from utils import set_parameter_requires_grad
 import os
 import time
 import copy
@@ -29,9 +30,10 @@ def main(args):
   num_epochs = args.epoch
   feature_extract = args.feature_extract
 
-  print(data_dir)
+  print('Dataset dir: ', data_dir)
 
   model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
+  model_ft = set_parameter_requires_grad(model_ft, feature_extract)
   model_ft.classifier[1] = nn.Conv2d(512, num_classes, kernel_size=(1,1), stride=(1,1))
   model_ft.num_classes = num_classes
   # print(model)
@@ -74,12 +76,11 @@ def main(args):
   params_to_update = model_ft.parameters()
   print("Params to learn:")
   if feature_extract:
-    print("HOHOHO")
     params_to_update = []
     for name,param in model_ft.named_parameters():
       if param.requires_grad == True:
         params_to_update.append(param)
-        # print("\t",name)
+        print("\t",name)
   else:
     for name,param in model_ft.named_parameters():
       if param.requires_grad == True:

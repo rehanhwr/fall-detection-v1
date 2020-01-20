@@ -17,7 +17,6 @@ def parse_args():
   return args
 
 
-
 def plot_loss_acc(losses, accuracies, num_epochs):
   # lhist = []
   # ahist = []
@@ -38,6 +37,15 @@ def plot_loss_acc(losses, accuracies, num_epochs):
 
 def save_points(model, path):
   torch.save(model, path)
+
+
+def set_parameter_requires_grad(model, feature_extracting):
+  if feature_extracting:
+    for param in model.parameters():
+      param.requires_grad = False
+
+  return model
+
 
 if __name__ == '__main__':
   main()
