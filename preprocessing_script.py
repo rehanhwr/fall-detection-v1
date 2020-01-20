@@ -15,7 +15,7 @@ def leading_zero(curr_str):
       curr_str = "0" + curr_str
   return curr_str
 
-def separate_adl_fall_to_classes:
+def separate_adl_fall_to_classes():
   csv_path = "./dataset/urfall-cam0-adls.csv"
   with open(csv_path) as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
@@ -43,7 +43,7 @@ def entries_to_name(entries_name):
 def renaming_images_with_class_name():
   root_dir = "./data/"
   phases = ['train/', 'val/']
-  classes = ["-1/", "0/", "1"]
+  classes = ["-1", "0", "1"]
 
   for phase in phases:
     for clas in classes:
