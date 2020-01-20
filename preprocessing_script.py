@@ -56,6 +56,7 @@ def renaming_images_with_class_name():
 
         new_path = "./data/all/" + entries_to_name(entry) + '_' + clas + EXTENSION 
         img = img.save(new_path)
+        print('Saved to ', new_path)
   
 
 if __name__ == '__main__':
