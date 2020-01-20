@@ -90,7 +90,7 @@ def main(args):
   criterion = nn.CrossEntropyLoss()
 
   # Train and evaluate
-  model_ft, train_loss, val_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs, is_inception=(model_name=="inception"))
+  model_ft, train_loss, val_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs)
   save_points(model_ft, save_path)
   print('Train Loss: {}'.format(train_loss))
   print('Val Acc: {}'.format(val_acc))
@@ -98,7 +98,7 @@ def main(args):
 
 
 
-def train_model(model, dataloaders, criterion, optimizer, num_epochs, is_inception=False):
+def train_model(model, dataloaders, criterion, optimizer, num_epochs):
     since = time.time()
 
     val_acc_history = []
@@ -135,18 +135,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, is_incepti
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
                     # Get model outputs and calculate loss
-                    # Special case for inception because in training it has an auxiliary output. In train
-                    #   mode we calculate the loss by summing the final output and the auxiliary output
-                    #   but in testing we only consider the final output.
-                    if is_inception and phase == 'train':
-                        # From https://discuss.pytorch.org/t/how-to-optimize-inception-model-with-auxiliary-classifiers/7958
-                        outputs, aux_outputs = model(inputs)
-                        loss1 = criterion(outputs, labels)
-                        loss2 = criterion(aux_outputs, labels)
-                        loss = loss1 + 0.4*loss2
-                    else:
-                        outputs = model(inputs)
-                        loss = criterion(outputs, labels)
+                    outputs = model(inputs)
+                    loss = criterion(outputs, labels)
 
                     _, preds = torch.max(outputs, 1)
 
