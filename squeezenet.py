@@ -1,4 +1,3 @@
-import argparse
 from collections import OrderedDict
 import torch
 from torch import nn
@@ -6,8 +5,9 @@ from torch import optim
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision import transforms
-import numpy as np
-import matplotlib.pyplot as plt
+from utils import parse_args
+from utils import plot_loss_acc
+from utils import save_points
 import os
 import time
 import copy
@@ -20,7 +20,8 @@ input_size = 224
 batch_size=10
 feature_extract=False
 model_name='squeezenet1_0'
-# Detect if we have a GPU available
+save_path = "./saved_model/model_ft"
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
@@ -90,7 +91,7 @@ def main(args):
 
   # Train and evaluate
   model_ft, train_loss, val_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs, is_inception=(model_name=="inception"))
-  torch.save(model_ft, "./saved_model/model_ft")
+  save_points(model_ft, save_path)
   print('Train Loss: {}'.format(train_loss))
   print('Val Acc: {}'.format(val_acc))
   plot_loss_acc(train_loss, val_acc, num_epochs)
@@ -183,49 +184,6 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, is_incepti
     # load best model weights
     model.load_state_dict(best_model_wts)
     return model, train_loss_history, val_acc_history
-
-def parse_args():
-  parser = argparse.ArgumentParser(description='PyTorch Example')
-  parser.add_argument('--disable-cuda', action='store_true',
-                      help='Disable CUDA')
-  parser.add_argument('-gpu', action='store_false',
-                      help='Disable CUDA')
-  parser.add_argument("-dn", "--dataset-name", type=str, default='data_dummy/')
-  parser.add_argument("-e", "--epoch", type=int, default=10)
-
-  args = parser.parse_args()
-  args.device = None
-  args.gpu = None
-  if not args.disable_cuda and torch.cuda.is_available():
-    args.device = torch.device('cuda')
-    args.gpu = True
-  else:
-    args.device = torch.device('cpu')
-    args.gpu = False
-  
-  return args
-
-
-def plot_loss_acc(losses, accuracies, num_epochs):
-  # lhist = []
-  # ahist = []
-
-  # lhist = [l.cpu().numpy() for l in losses]
-  # ahist = [a.cpu().numpy() for a in accuracies]
-
-  plt.title("Training Loss and Validation Accuracy")
-  plt.xlabel("Epochs")
-  plt.ylabel("Loss/Accuracy")
-  plt.plot(range(1,num_epochs+1),accuracies,label="Val Acc")
-  plt.plot(range(1,num_epochs+1),losses,label="Train Loss")
-  plt.ylim((0,1.))
-  plt.xticks(np.arange(1, num_epochs+1, 1.0))
-  plt.legend()
-  plt.show()
-
-
-def save_points(model, path):
-  torch.save(model, path)
 
 if __name__ == '__main__':
   args = parse_args()
