@@ -45,27 +45,29 @@ def renaming_images_with_class_name():
   phases = ['train/', 'val/']
   classes = ["-1", "0", "1"]
 
-  move = False
-  for phase in phases:
-    for clas in classes:
-      if phase == 'train/' and clas != '1':
-        continue
+  # for phase in phases:
+  #   for clas in classes:
+  #     image_path = root_dir + phase + clas + "/"
+  #     entries = os.listdir(image_path)
 
-      image_path = root_dir + phase + clas + "/"
-      entries = os.listdir(image_path)
+  #     for entry in entries:
+  #       entry_path = image_path + entry
+  #       img = Image.open(entry_path)
+      
+  #       new_path = "./data/all/" + entries_to_name(entry) + '_' + clas + EXTENSION 
+  #       img = img.save(new_path)
+  #       print('Saved to ', new_path)
 
-      for entry in entries:
-        entry_path = image_path + entry
-        img = Image.open(entry_path)
-
-        if move:
-          new_path = "./data/all/" + entries_to_name(entry) + '_' + clas + EXTENSION 
-          img = img.save(new_path)
-          print('Saved to ', new_path)
-
-        if entry == 'adl-23-cam0-rgb-156.png':
-          move = True
-
+  lst = os.listdir('./data/all/')
+  entries = os.listdir('./data/train/1/')
+  for entry in entries:
+    new_entry_name = entries_to_name(entries_to_name) + '_' + clas + EXTENSION
+    if new_entry_name not in lst:
+      entry_path = './data/train/1/' + entry
+      img = Image.open(entry_path)
+      
+      new_path = "./data/all/" + entries_to_name(entry) + '_1' + EXTENSION 
+      img = img.save(new_path)
 
 if __name__ == '__main__':
   renaming_images_with_class_name()
