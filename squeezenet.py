@@ -87,6 +87,9 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
   val_acc_history = []
   train_loss_history = []
 
+  batch_val_acc_history = []
+  batch_train_loss_history = []
+
   best_model_wts = copy.deepcopy(model.state_dict())
   best_acc = 0.0
 
@@ -106,6 +109,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
       running_loss = 0.0
       running_corrects = 0
 
+      print(phase)
+      print('=' * 20)
       # Iterate over data.
       for inputs, labels in dataloaders[phase]:
         inputs = inputs.to(device)
@@ -119,6 +124,7 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
         with torch.set_grad_enabled(phase == 'train'):
             # Get model outputs and calculate loss
           outputs = model(inputs)
+          print('outputs:', outputs)
           loss = criterion(outputs, labels)
 
           _, preds = torch.max(outputs, 1)
@@ -129,8 +135,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
             optimizer.step()
 
         # statistics
-        print('loss per batch: ', loss.item()*inputs.size(0))
-        print('acc per batch: ', torch.sum(preds == labels.data))
+        print('loss item: {}, input_size: {}'.format(loss.item(), inputs.size(0)))
+        print('acc per batch: ', (torch.sum(preds == labels.data))/inputs.size(0))
         running_loss += loss.item() * inputs.size(0)
         running_corrects += torch.sum(preds == labels.data)
 
