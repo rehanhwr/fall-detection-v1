@@ -18,6 +18,8 @@ def parse_args():
   parser.add_argument("-dn", "--dataset-name", type=str, default='./data_dummy/classes/')
   parser.add_argument("-e", "--epoch", type=int, default=1)
   parser.add_argument("-f", "--feature-extract", action='store_true')
+  parser.add_argument("-b", "--batch-size", type=int, default=64)
+  parser.add_argument("-v", "--validation-size", type=float, default=.15)
 
   args = parser.parse_args()
   return args

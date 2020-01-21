@@ -15,8 +15,6 @@ data_path_train = root_path + 'train/'
 data_path_validation = root_path + 'validation/'
 num_classes = 3
 input_size = 224
-batch_size = 64
-validation_size = .15
 model_name = 'squeezenet1_0'
 save_path = "./saved_model/model_ft"
 
@@ -28,6 +26,8 @@ def main(args):
   data_dir = args.dataset_name
   num_epochs = args.epoch
   feature_extract = args.feature_extract
+  batch_size = args.batch_size
+  validation_size = args.validation_size
 
   print('Dataset dir: ', data_dir)
 
@@ -129,6 +129,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
             optimizer.step()
 
         # statistics
+        print('loss per batch: ', loss.item()*inputs.size(0))
+        print('acc per batch: ', torch.sum(preds == labels.data))
         running_loss += loss.item() * inputs.size(0)
         running_corrects += torch.sum(preds == labels.data)
 
