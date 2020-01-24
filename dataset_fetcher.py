@@ -60,7 +60,7 @@ dataset_name = generate_all_dataset_names()
 def get_next_index_data_name(sub, act, tri, cam):
   last_data_name = sub+'_'+act+'_'+tri+'_'+cam
   next_idx = ''
-  for name, idx in dataset_name:
+  for idx, name in enumerate(dataset_name, 1):
     if name == last_data_name:
       next_idx = idx
       break
