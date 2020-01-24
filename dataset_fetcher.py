@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import csv
 import gdown
 import os
+from utils import parse_args
 
 
 # generate data constant names
@@ -80,7 +81,8 @@ def write_downloaded_data(sub, act, tri, cam):
   f.close()
 
 
-def main():
+def main(args):
+  SAVE_PATH = args.save_path
   UP_DATASET_URL = 'https://sites.google.com/up.edu.mx/har-up/'
   # current loacation
   print('Parsing dataset page ...')
@@ -102,7 +104,7 @@ def main():
     anchor = div_data.find('a', href=True, text=ncam)
     
     url = anchor['href']
-    output_path = os.getcwd() + '/new_dataset/' + nsub + '/' + nact + '/' + ntri + '/' + ncam + '/' 
+    output_path = SAVE_PATH + '/new_dataset/' + nsub + '/' + nact + '/' + ntri + '/' + ncam + '/' 
     
     if not os.path.exists(output_path):
       os.makedirs(output_path)
@@ -120,4 +122,5 @@ def main():
 
 
 if __name__ == '__main__':
-  main()
+  args = parse_args()
+  main(args)

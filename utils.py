@@ -22,6 +22,7 @@ def parse_args():
   parser.add_argument("-f", "--feature-extract", action='store_true')
   parser.add_argument("-b", "--batch-size", type=int, default=64)
   parser.add_argument("-v", "--validation-size", type=float, default=.15)
+  parser.add_argument("-s", "--save_path", type=str)
 
   args = parser.parse_args()
   return args
