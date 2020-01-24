@@ -7,6 +7,8 @@ from torchvision import datasets
 from torchvision import transforms
 import os
 from torch.utils.data.sampler import SubsetRandomSampler
+from datetime import datetime
+
 
 
 
@@ -124,6 +126,13 @@ def load_split_train_test(datadir, batch_size=64, input_size=224, valid_size = .
 
   return dataloaders_dict
 
+
+def write_training_result(data):
+  f = open('train_result.txt', 'a')
+  today = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+  f.write('Result on {}\n'.format(today))
+  f.write(str(data) + str('\n\n'))
+  f.close()
 
 
 if __name__ == '__main__':
