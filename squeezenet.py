@@ -7,6 +7,7 @@ from utils import plot_loss_acc
 from utils import save_points
 from utils import set_parameter_requires_grad
 from utils import load_split_train_test
+from utils import write_training_result
 import time
 import copy
 
@@ -72,11 +73,12 @@ def main(args):
   criterion = nn.CrossEntropyLoss()
 
   # Train and evaluate
-  model_ft, train_loss, val_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs)
+  model_ft, train_loss, val_acc, batch_lost_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs)
   save_points(model_ft, save_path)
   print()
   print('Train Loss: {}'.format(train_loss))
   print('Val Acc: {}'.format(val_acc))
+  write_training_result(batch_lost_acc)
   plot_loss_acc(train_loss, val_acc, num_epochs)
 
 
@@ -87,8 +89,11 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
   val_acc_history = []
   train_loss_history = []
 
+  batch_val_loss_history = []
   batch_val_acc_history = []
+
   batch_train_loss_history = []
+  batch_train_acc_history =[]
 
   best_model_wts = copy.deepcopy(model.state_dict())
   best_acc = 0.0
@@ -134,10 +139,18 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
             optimizer.step()
 
         # statistics
-        print('loss item: {}, input_size: {}'.format(loss.item(), inputs.size(0)))
-        print('acc per batch: ', (torch.sum(preds == labels.data))/inputs.size(0))
         running_loss += loss.item() * inputs.size(0)
         running_corrects += torch.sum(preds == labels.data)
+        
+        batch_loss = loss.item()
+        batch_acc = (torch.sum(preds == labels.data)*1.0)/inputs.size(0)
+        
+        if phase == 'train':
+          batch_train_loss_history.append(batch_loss)
+          batch_train_acc_history.append(batch_acc)
+        else:
+          batch_val_loss_history.append(batch_loss)
+          batch_val_acc_history.append(batch_acc)
 
       epoch_loss = running_loss / len(dataloaders[phase].dataset)
       epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
@@ -163,7 +176,14 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
 
   # load best model weights
   model.load_state_dict(best_model_wts)
-  return model, train_loss_history, val_acc_history
+
+  batch_lost_acc = {
+    'train_loss': batch_train_loss_history,
+    'train_acc': batch_train_acc_history,
+    'val_loss': batch_val_loss_history,
+    'val_acc': batch_val_acc_history
+  }
+  return model, train_loss_history, val_acc_history, batch_lost_acc
 
 if __name__ == '__main__':
   args = parse_args()
