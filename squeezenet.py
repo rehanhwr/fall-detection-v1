@@ -35,7 +35,13 @@ def main(args):
   resume_training = args.resume_training
   LOAD_PATH = args.load_path
 
-  print('Dataset dir: ', data_dir)
+  print('data_dir: ', data_dir)
+  print('num_classes: ', num_classes)
+  print('num_epochs: ', num_epochs)
+  print('batch_size: ', batch_size)
+  print('validation_size: ', validation_size)
+  print('resume_training: ', int(resume_training)>1)
+  print('load_path: ', LOAD_PATH)
 
   if feature_extract:
     model_ft = torch.load(save_path)
