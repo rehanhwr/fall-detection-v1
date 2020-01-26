@@ -141,12 +141,23 @@ def load_split_train_test(datadir, batch_size=64, input_size=224, valid_size = .
   return dataloaders_dict, sz_dict
 
 
-def write_training_result(data):
-  f = open('train_result.txt', 'a')
-  today = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
-  f.write('Result on {}\n'.format(today))
-  f.write(str(data) + str('\n\n'))
+def write_training_result(data, to_path):
+  f = open(to_path, 'a')
+  # today = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+  # f.write('Result on {}\n'.format(today))
+  # f.write(str(data) + str('\n\n'))
+  f.write(str(data))
   f.close()
+
+
+def get_data_to_print(epoch, phase, loss, acc):
+  location = ''
+  if phase == 'train':
+    location = './train_result_batch.csv'
+  else:
+    location = './val_result_batch.csv'
+  data = "{},{},{},{}\n".format(epoch, phase, loss, acc)
+  return data, location
 
 
 if __name__ == '__main__':

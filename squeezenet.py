@@ -8,6 +8,7 @@ from utils import save_points
 from utils import set_parameter_requires_grad
 from utils import load_split_train_test
 from utils import write_training_result
+from utils import get_data_to_print
 import time
 import copy
 
@@ -77,7 +78,6 @@ def main(args):
   print()
   print('Train Loss: {}'.format(train_loss))
   print('Val Acc: {}'.format(val_acc))
-  write_training_result(batch_lost_acc)
   plot_loss_acc(train_loss, val_acc, num_epochs)
 
 
@@ -153,8 +153,13 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
           batch_val_loss_history.append(batch_loss)
           batch_val_acc_history.append(batch_acc)
 
-        time_elapsed_batch = time.time() - since_batch
+
+        data_to_print, location = get_data_to_print(epoch, phase, batch_loss, batch_acc)
+        write_training_result(data_to_print, location)
+
+
         print('BATCH {} Loss: {:.4f} Acc: {:.4f}'.format(phase, batch_loss, batch_acc))
+        time_elapsed_batch = time.time() - since_batch
         print('One batch completed in {:.0f}m {:.0f}s'.format(time_elapsed_batch // 60, time_elapsed_batch % 60))
         print()
 
