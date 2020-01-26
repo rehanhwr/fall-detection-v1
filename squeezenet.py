@@ -14,7 +14,6 @@ import copy
 root_path = "data_dummy/"
 data_path_train = root_path + 'train/'
 data_path_validation = root_path + 'validation/'
-num_classes = 3
 input_size = 224
 model_name = 'squeezenet1_0'
 save_path = "./saved_model/model_ft"
@@ -29,6 +28,7 @@ def main(args):
   feature_extract = args.feature_extract
   batch_size = args.batch_size
   validation_size = args.validation_size
+  num_classes = args.classes
 
   print('Dataset dir: ', data_dir)
 
@@ -43,10 +43,7 @@ def main(args):
   # print(model)
 
   # Create training and validation dataloaders
-  dataloaders_dict = load_split_train_test(data_dir, batch_size, input_size, validation_size)
-  print('Train size: ', len(dataloaders_dict['train'].dataset))
-  print('Val size: ', len(dataloaders_dict['val'].dataset))
-  
+  dataloaders_dict, sz_dict = load_split_train_test(data_dir, batch_size, input_size, validation_size)
   # Send the model to GPU (Optimizer)
   model_ft = model_ft.to(device)
 
@@ -75,7 +72,7 @@ def main(args):
   criterion = nn.CrossEntropyLoss()
 
   # Train and evaluate
-  model_ft, train_loss, val_acc, batch_lost_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs)
+  model_ft, train_loss, val_acc, batch_lost_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs, sz_dict)
   save_points(model_ft, save_path)
   print()
   print('Train Loss: {}'.format(train_loss))
@@ -85,7 +82,7 @@ def main(args):
 
 
 
-def train_model(model, dataloaders, criterion, optimizer, num_epochs):
+def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
   since = time.time()
 
   val_acc_history = []
@@ -154,8 +151,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs):
           batch_val_loss_history.append(batch_loss)
           batch_val_acc_history.append(batch_acc)
 
-      epoch_loss = running_loss / len(dataloaders[phase].dataset)
-      epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+      epoch_loss = running_loss / sz_dict[phase]
+      epoch_acc = running_corrects.double() / sz_dict[phase]
 
       print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
 

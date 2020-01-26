@@ -25,6 +25,7 @@ def parse_args():
   parser.add_argument("-s", "--save_path", type=str)
   parser.add_argument("-p", "--proxy", type=str)
   parser.add_argument("-mt", "--max-try", type=int)
+  parser.add_argument("-c", "--classes", type=int)
 
   args = parser.parse_args()
   return args
@@ -111,6 +112,11 @@ def load_split_train_test(datadir, batch_size=64, input_size=224, valid_size = .
   num_train = len(train_data)
   indices = list(range(num_train))
   split = int(np.floor(valid_size * num_train))
+  print("Total data: ", num_train)
+  train_cnt = split
+  val_cnt = num_train-split
+  print("Number of data Training: ", train_cnt)
+  print("Number of data Validation: ", val_cnt)
   np.random.seed(7)
   np.random.shuffle(indices)
 
@@ -127,7 +133,12 @@ def load_split_train_test(datadir, batch_size=64, input_size=224, valid_size = .
     'val': testloader
   }
 
-  return dataloaders_dict
+  sz_dict = {
+    'train': train_cnt,
+    'val': val_cnt
+  }
+
+  return dataloaders_dict, sz_dict
 
 
 def write_training_result(data):
@@ -140,4 +151,3 @@ def write_training_result(data):
 
 if __name__ == '__main__':
   main()
-
