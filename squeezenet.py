@@ -117,6 +117,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
       print(phase)
       print('=' * 20)
       # Iterate over data.
+
+      batch_cnt = 0
       for inputs, labels in dataloaders[phase]:
         since_batch = time.time()
 
@@ -171,6 +173,11 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
         print('One batch completed in {:.0f}m {:.0f}s'.format(time_elapsed_batch // 60, time_elapsed_batch % 60))
         print()
 
+        SAVE_MODEL_PATH_BATCH = './saved_model/batch'+ str(batch_cnt) + '_epoch' + str(epoch) + "_saved_model.pth"
+        save_points(SAVE_MODEL_PATH_BATCH, epoch, model, optimizer, batch_cnt, phase, loss)
+
+        batch_cnt+=1
+
       epoch_loss = running_loss / sz_dict[phase]
       epoch_acc = running_corrects.double() / sz_dict[phase]
 
@@ -193,13 +200,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
   print('Training completed in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
   print('Best val Acc: {:4f}'.format(best_acc))
 
-  SAVE_MODEL_PATH = './saved_model/epoch' + str(epoch) + "_saved_model"
-  torch.save({
-    'epoch': epoch,
-    'model_state_dict': model.state_dict(),
-    'optimizer_state_dict': optimizer.state_dict(),
-    'loss': loss
-    }, SAVE_MODEL_PATH)
+  SAVE_MODEL_PATH = './saved_model/epoch' + str(epoch) + "_saved_model.pth"
+  save_points(SAVE_MODEL_PATH, epoch, model, optimizer)
 
   # load best model weights
   model.load_state_dict(best_model_wts)

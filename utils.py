@@ -49,8 +49,15 @@ def plot_loss_acc(losses, accuracies, num_epochs):
   plt.show()
 
 
-def save_points(model, path):
-  torch.save(model, path)
+def save_points(PATH, epoch, model, optimizer, batch="-1", phase=None, loss=None):
+  torch.save({
+    'batch': batch,
+    'phase': phase,
+    'epoch': epoch,
+    'model_state_dict': model.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+    'loss': loss
+    }, PATH)
 
 
 def set_parameter_requires_grad(model, feature_extracting):
