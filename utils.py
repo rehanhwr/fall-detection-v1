@@ -23,6 +23,7 @@ def parse_args():
   parser.add_argument("-b", "--batch-size", type=int, default=64)
   parser.add_argument("-v", "--validation-size", type=float, default=.15)
   parser.add_argument("-s", "--save_path", type=str)
+  parser.add_argument("-p", "--proxy", type=str)
 
   args = parser.parse_args()
   return args

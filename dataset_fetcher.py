@@ -83,6 +83,7 @@ def write_downloaded_data(sub, act, tri, cam):
 
 def main(args):
   SAVE_PATH = args.save_path
+  PROXY = args.proxy
   UP_DATASET_URL = 'https://sites.google.com/up.edu.mx/har-up/'
   # current loacation
   print('Parsing dataset page ...')
@@ -112,7 +113,7 @@ def main(args):
     output_path += nsub+nact+ntri+ncam + '.zip'
     
     print('Downloading data to: ', output_path)
-    gdown.download(url, output_path, quiet=False)
+    gdown.download(url, output_path, quiet=False, proxy=PROXY)
 
     write_downloaded_data(nsub, nact, ntri, ncam)
     next_idx+=1
