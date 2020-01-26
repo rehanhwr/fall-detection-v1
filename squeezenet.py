@@ -44,8 +44,8 @@ def main(args):
 
   # Create training and validation dataloaders
   dataloaders_dict = load_split_train_test(data_dir, batch_size, input_size, validation_size)
-  print('Train size: ', len(dataloaders['train'].dataset))
-  print('Val size: ', len(dataloaders['val'].dataset))
+  print('Train size: ', len(dataloaders_dict['train'].dataset))
+  print('Val size: ', len(dataloaders_dict['val'].dataset))
   
   # Send the model to GPU (Optimizer)
   model_ft = model_ft.to(device)
