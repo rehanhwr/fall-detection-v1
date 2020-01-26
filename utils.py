@@ -8,12 +8,25 @@ from torchvision import transforms
 import os
 from torch.utils.data.sampler import SubsetRandomSampler
 from datetime import datetime
+import random
 
 
 
 
 def main():
   pass
+
+
+def seed_torch(seed=1029):
+  random.seed(seed)
+  os.environ['PYTHONHASHSEED'] = str(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+  torch.cuda.manual_seed(seed)
+  torch.cuda.manual_seed_all(seed) # if you are using multi-GPU.
+  torch.backends.cudnn.benchmark = False
+  # torch.backends.cudnn.deterministic = True
+
 
 def parse_args():
   parser = argparse.ArgumentParser(description='PyTorch Example')
@@ -70,6 +83,7 @@ def set_parameter_requires_grad(model, feature_extracting):
   return model
 
 
+# DEPRECATED
 def load_dataset(data_dir, batch_size, input_size):
   # Data augmentation and normalization for training
   # Just normalization for validation
@@ -133,8 +147,8 @@ def load_split_train_test(datadir, batch_size=64, input_size=224, valid_size = .
   train_sampler = SubsetRandomSampler(train_idx)
   test_sampler = SubsetRandomSampler(test_idx)
 
-  trainloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
-  testloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
+  trainloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size, worker_init_fn=np.random.seed(12))
+  testloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size, worker_init_fn=np.random.seed(12))
 
   dataloaders_dict = {
     'train': trainloader,

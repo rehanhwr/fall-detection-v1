@@ -10,6 +10,7 @@ from utils import load_split_train_test
 from utils import write_training_result
 from utils import get_data_to_print
 from utils import accuracy_topk
+from utils import seed_torch
 from continue_train_model import continue_train_model
 import time
 import copy
@@ -26,6 +27,8 @@ print('Device used: ', device)
 
 
 def main(args):
+  seed_torch()
+
   data_dir = args.dataset_name
   num_epochs = args.epoch
   feature_extract = args.feature_extract
@@ -40,7 +43,7 @@ def main(args):
   print('num_epochs: ', num_epochs)
   print('batch_size: ', batch_size)
   print('validation_size: ', validation_size)
-  print('resume_training: ', int(resume_training)>1)
+  print('resume_training: ', int(resume_training)>0)
   print('load_path: ', LOAD_PATH)
 
   if feature_extract:
@@ -95,10 +98,10 @@ def main(args):
 
   # Train and evaluate
   if resume_training:
-    model_ft, train_loss, val_acc, batch_lost_acc = continue_train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs, sz_dict, resume_dict)
+    model_ft, train_loss, val_acc, batch_lost_acc = continue_train_model(torch, model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs, sz_dict, resume_dict)
   else:
     model_ft, train_loss, val_acc, batch_lost_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs, sz_dict)
-  save_points(model_ft, save_path)
+  # save_points(model_ft, save_path)
   print()
   print('Train Loss: {}'.format(train_loss))
   print('Val Acc: {}'.format(val_acc))

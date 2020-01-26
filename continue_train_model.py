@@ -1,7 +1,4 @@
 from collections import OrderedDict
-import torch
-from torch import nn
-from torch import optim
 from utils import parse_args
 from utils import plot_loss_acc
 from utils import save_points
@@ -26,7 +23,7 @@ resume_dict = {
   'phase': checkpoint['phase']
 }
 '''
-def continue_train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict, resume_dict):
+def continue_train_model(torch, model, dataloaders, criterion, optimizer, num_epochs, sz_dict, resume_dict):
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
   since = time.time()
@@ -67,13 +64,15 @@ def continue_train_model(model, dataloaders, criterion, optimizer, num_epochs, s
       print('=' * 20)
       # Iterate over data.
 
+      # to be updated if continure per epoch
       batch_cnt = 0
       for inputs, labels in dataloaders[phase]:
         if resume_dict['batch_cnt'] is not None and batch_cnt <= int(resume_dict['batch_cnt']):
           batch_cnt+=1
+          print("Increasing batch_cnt: ", batch_cnt)
           continue
 
-        print('batch_cnt: ', batch_cnt)
+
         since_batch = time.time()
 
         inputs = inputs.to(device)
