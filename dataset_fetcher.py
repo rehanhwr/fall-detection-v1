@@ -84,6 +84,8 @@ def write_downloaded_data(sub, act, tri, cam):
 def main(args):
   SAVE_PATH = args.save_path
   PROXY = args.proxy
+  MAX_TRY = args.max_try
+
   UP_DATASET_URL = 'https://sites.google.com/up.edu.mx/har-up/'
   # current loacation
   print('Parsing dataset page ...')
@@ -113,7 +115,17 @@ def main(args):
     output_path += nsub+nact+ntri+ncam + '.zip'
     
     print('Downloading data to: ', output_path)
-    gdown.download(url, output_path, quiet=False, proxy=PROXY)
+    output = None
+    cnt = 0
+    while output is None:
+      output = gdown.download(url, output_path, quiet=False, proxy=PROXY)
+      if output is None:
+        cnt+=1
+        print('================== Re-trying number ', cnt)
+
+      if cnt > MAX_TRY:
+        print("============================= DOWNLOAD ALWAYS FAILED FOR {} TIMES ".format(MAX_TRY))
+        return
 
     write_downloaded_data(nsub, nact, ntri, ncam)
     next_idx+=1
