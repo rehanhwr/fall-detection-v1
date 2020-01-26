@@ -33,13 +33,13 @@ done
 
 if [ $feature_extraction -gt 0 ]
 then
-  python ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size -f
+  nohup python -u ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size -f > output.log &
 else
   if [ $resume_training -gt 0 ]
   then
-    python ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size -r $resume_training -l $load_path
+    nohup python -u ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size -r $resume_training -l $load_path > output.log &
   else
-    python ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size
+    nohup python -u ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size > output.log &
   fi
 fi
 
