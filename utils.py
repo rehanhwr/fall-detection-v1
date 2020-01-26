@@ -113,14 +113,14 @@ def load_split_train_test(datadir, batch_size=64, input_size=224, valid_size = .
   indices = list(range(num_train))
   split = int(np.floor(valid_size * num_train))
   print("Total data: ", num_train)
-  train_cnt = split
-  val_cnt = num_train-split
-  print("Number of data Training: ", train_cnt)
-  print("Number of data Validation: ", val_cnt)
   np.random.seed(7)
   np.random.shuffle(indices)
 
   train_idx, test_idx = indices[split:], indices[:split]
+  train_cnt = len(train_idx)
+  val_cnt = len(test_idx)
+  print("Number of data Training: ", train_cnt)
+  print("Number of data Validation: ", val_cnt)
 
   train_sampler = SubsetRandomSampler(train_idx)
   test_sampler = SubsetRandomSampler(test_idx)

@@ -117,6 +117,8 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
       print('=' * 20)
       # Iterate over data.
       for inputs, labels in dataloaders[phase]:
+        since_batch = time.time()
+
         inputs = inputs.to(device)
         labels = labels.to(device)
 
@@ -151,6 +153,11 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
           batch_val_loss_history.append(batch_loss)
           batch_val_acc_history.append(batch_acc)
 
+        time_elapsed_batch = time.time() - since_batch
+        print('BATCH {} Loss: {:.4f} Acc: {:.4f}'.format(phase, batch_loss, batch_acc))
+        print('One batch completed in {:.0f}m {:.0f}s'.format(time_elapsed_batch // 60, time_elapsed_batch % 60))
+        print()
+
       epoch_loss = running_loss / sz_dict[phase]
       epoch_acc = running_corrects.double() / sz_dict[phase]
 
@@ -166,11 +173,11 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
         train_loss_history.append(epoch_loss)
 
     time_elapsed_epoch = time.time() - since_epoch
-    print('One epoch complete in {:.0f}m {:.0f}s'.format(time_elapsed_epoch // 60, time_elapsed_epoch % 60))
+    print('One epoch completed in {:.0f}m {:.0f}s'.format(time_elapsed_epoch // 60, time_elapsed_epoch % 60))
     print()
 
   time_elapsed = time.time() - since
-  print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
+  print('Training completed in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
   print('Best val Acc: {:4f}'.format(best_acc))
 
   # load best model weights
