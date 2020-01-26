@@ -26,6 +26,8 @@ def parse_args():
   parser.add_argument("-p", "--proxy", type=str)
   parser.add_argument("-mt", "--max-try", type=int)
   parser.add_argument("-c", "--classes", type=int)
+  parser.add_argument("-r", "--resume-training", type=int, default=0)
+  parser.add_argument("-l", "--load-path", type=str)
 
   args = parser.parse_args()
   return args

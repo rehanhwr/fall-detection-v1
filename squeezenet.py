@@ -10,6 +10,7 @@ from utils import load_split_train_test
 from utils import write_training_result
 from utils import get_data_to_print
 from utils import accuracy_topk
+from continue_train_model import continue_train_model
 import time
 import copy
 
@@ -31,6 +32,8 @@ def main(args):
   batch_size = args.batch_size
   validation_size = args.validation_size
   num_classes = args.classes
+  resume_training = args.resume_training
+  LOAD_PATH = args.load_path
 
   print('Dataset dir: ', data_dir)
 
@@ -70,11 +73,25 @@ def main(args):
   # Observe that all parameters are being optimized
   optimizer_ft = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
 
+  if resume_training:
+    checkpoint = torch.load(LOAD_PATH)
+    model_ft.load_state_dict(checkpoint['model_state_dict'])
+    optimizer_ft.load_state_dict(checkpoint['optimizer_state_dict'])
+    resume_dict = {
+      'epoch': checkpoint['epoch'],
+      'loss': checkpoint['loss'],
+      'batch_cnt': checkpoint['batch'],
+      'phase': checkpoint['phase']
+    }
+
   # Setup the loss fxn
   criterion = nn.CrossEntropyLoss()
 
   # Train and evaluate
-  model_ft, train_loss, val_acc, batch_lost_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs, sz_dict=sz_dict)
+  if resume_training:
+    model_ft, train_loss, val_acc, batch_lost_acc = continue_train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs, sz_dict, resume_dict)
+  else:
+    model_ft, train_loss, val_acc, batch_lost_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs, sz_dict)
   save_points(model_ft, save_path)
   print()
   print('Train Loss: {}'.format(train_loss))
