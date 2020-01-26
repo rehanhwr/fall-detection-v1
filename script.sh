@@ -7,7 +7,7 @@ module load cuda/10.1.105 intel
 
 
 # suggested default values for training: ./script.sh -d ./data/classes/ -e 5 -b 100 -v .2  -f 0
-while getopts ":e:b:d:f:v:c:r:l" opt; do
+while getopts ":e:b:d:f:v:c:r:l:" opt; do
   case $opt in
     e) epoch="$OPTARG"
     ;;
@@ -33,8 +33,13 @@ done
 
 if [ $feature_extraction -gt 0 ]
 then
-  python ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size  -r $resume_training -l $load_path -f
+  python ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size -f
 else
-  python ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size -r $resume_training -l $load_path
+  if [ $resume_training -gt 0 ]
+  then
+    python ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size -r $resume_training -l $load_path
+  else
+    python ./squeezenet.py -dn $dataset_name -e $epoch -b $batch_size -v $validation_size -c $class_size
+  fi
 fi
 
