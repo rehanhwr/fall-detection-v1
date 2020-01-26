@@ -72,7 +72,7 @@ def main(args):
   criterion = nn.CrossEntropyLoss()
 
   # Train and evaluate
-  model_ft, train_loss, val_acc, batch_lost_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs, sz_dict)
+  model_ft, train_loss, val_acc, batch_lost_acc = train_model(model_ft, dataloaders_dict, criterion, optimizer_ft, num_epochs=num_epochs, sz_dict=sz_dict)
   save_points(model_ft, save_path)
   print()
   print('Train Loss: {}'.format(train_loss))
