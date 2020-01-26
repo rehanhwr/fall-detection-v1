@@ -160,5 +160,19 @@ def get_data_to_print(epoch, phase, loss, acc):
   return data, location
 
 
+def accuracy_topk(output, target, topk=(1,)):
+  res = []
+  with torch.no_grad():
+    maxk = max(topk)
+    batch_size = target.size(0)
+    _, pred = output.topk(k=maxk, dim=1, largest=True, sorted=True)
+    pred = pred.t()
+    correct = pred.eq(target.view(1, -1).expand_as(pred))
+    for k in topk:
+      correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
+      res.append(correct_k.mul_(100.0 / batch_size))
+  return res
+
+
 if __name__ == '__main__':
   main()

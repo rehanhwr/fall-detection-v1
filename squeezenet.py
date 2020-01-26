@@ -9,6 +9,7 @@ from utils import set_parameter_requires_grad
 from utils import load_split_train_test
 from utils import write_training_result
 from utils import get_data_to_print
+from utils import accuracy_topk
 import time
 import copy
 
@@ -78,7 +79,7 @@ def main(args):
   print()
   print('Train Loss: {}'.format(train_loss))
   print('Val Acc: {}'.format(val_acc))
-  plot_loss_acc(train_loss, val_acc, num_epochs)
+  # plot_loss_acc(train_loss, val_acc, num_epochs)
 
 
 
@@ -134,6 +135,14 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
 
           _, preds = torch.max(outputs, 1)
 
+          if phase == 'val':
+            probs = torch.exp(outputs)
+            acc_topk_res = accuracy_topk(probs, labels.data, (1,5))
+            top1_acc = acc_topk_res[0].item()
+            top5_acc = acc_topk_res[1].item()
+            print("Top-1 Acc: {}, Top-5 Acc: {}".format(top1_acc, top5_acc))
+            write_training_result("{},{}\n".format(top1_acc, top5_acc), "./top1_top5_acc.csv")
+
           # backward + optimize only if in training phase
           if phase == 'train':
             loss.backward()
@@ -152,7 +161,6 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
         else:
           batch_val_loss_history.append(batch_loss)
           batch_val_acc_history.append(batch_acc)
-
 
         data_to_print, location = get_data_to_print(epoch, phase, batch_loss, batch_acc)
         write_training_result(data_to_print, location)
