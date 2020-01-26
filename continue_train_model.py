@@ -27,6 +27,8 @@ resume_dict = {
 }
 '''
 def continue_train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict, resume_dict):
+  device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
   since = time.time()
 
   val_acc_history = []
@@ -48,7 +50,11 @@ def continue_train_model(model, dataloaders, criterion, optimizer, num_epochs, s
     print('-' * 10)
 
     # Each epoch has a training and validation phase
-    for phase in ['train', 'val']:
+
+    phase_idx = 0 if resume_dict['phase'] == 'train' else 1
+    for phase_i in range(phase_idx, 2):
+      phase = ('train', 'val')[phase_i]
+
       if phase == 'train':
         model.train()  # Set model to training mode
       else:
@@ -63,6 +69,11 @@ def continue_train_model(model, dataloaders, criterion, optimizer, num_epochs, s
 
       batch_cnt = 0
       for inputs, labels in dataloaders[phase]:
+        if resume_dict['batch_cnt'] is not None and batch_cnt <= int(resume_dict['batch_cnt']):
+          batch_cnt+=1
+          continue
+
+        print('batch_cnt: ', batch_cnt)
         since_batch = time.time()
 
         inputs = inputs.to(device)
