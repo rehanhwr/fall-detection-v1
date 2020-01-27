@@ -22,7 +22,8 @@ def load_inference_model(args):
   # LOAD_PATH = './saved_model/batch294_epoch0_saved_model.pth'
   # data_dir = "/gs/hs0/tga-isshiki-lab/rehan/dataset/"
   data_dir = args.dataset_name
-  LOAD_PATH = args.load_path
+  # LOAD_PATH = args.load_path
+  LOAD_PATH = './saved_model/batch294_epoch0_saved_model.pth'
   batch_size = args.batch_size
   validation_size = args.validation_size
 
@@ -79,6 +80,11 @@ def main(args):
   y_pred, y_true = load_inference_model(args)
   print("y_pred", y_pred)
   print("y_true", y_true)
+  torch.save({
+    "cnf_matrix": cnf_matrix,
+    'y_pred': y_pred,
+    'y_true': y_true
+  }, "./cnf_matrix.pth")
 
   classes=[x for x in range(num_classes)]
   cnf_matrix = confusion_matrix(y_true, y_pred, labels=classes)
