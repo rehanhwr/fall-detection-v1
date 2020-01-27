@@ -1,15 +1,15 @@
-from sklearn.metrics import confusion_matrix
-import itertools
-import numpy as np
 import torch
 from torch import nn
 from torch import optim
+from sklearn.metrics import confusion_matrix
 from utils import set_parameter_requires_grad
 from utils import load_split_train_test
 from utils import parse_args
 from utils import write_training_result
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sn
+import itertools
 import pandas as pd
 
 
