@@ -6,7 +6,7 @@
 module load cuda/10.1.105 intel
 
 
-# suggested default values for training: ./script.sh -d ./data/classes/ -e 5 -b 100 -v .2  -f 0
+# suggested default values for training: ./script_cnf.sh -d "/gs/hs0/tga-isshiki-lab/rehan/dataset/" -b 20 -v .3  -f 0 -l './saved_model/batch294_epoch0_saved_model.pth'
 while getopts ":e:b:d:f:v:c:r:l:" opt; do
   case $opt in
     e) epoch="$OPTARG"

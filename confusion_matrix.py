@@ -26,6 +26,12 @@ def load_inference_model(args):
   batch_size = args.batch_size
   validation_size = args.validation_size
 
+  print('data_dir: ', data_dir)
+  print('num_classes: ', num_classes)
+  print('batch_size: ', batch_size)
+  print('validation_size: ', validation_size)
+  print('load_path: ', LOAD_PATH)
+
   feature_extract = False
 
   model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
