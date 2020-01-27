@@ -3,15 +3,14 @@ import itertools
 import numpy as np
 import torch
 from torch import nn
+from torch import optim
 from utils import set_parameter_requires_grad
 from utils import load_split_train_test
 from utils import parse_args
+from utils import write_training_result
 import matplotlib.pyplot as plt
-from torch import optim
 import seaborn as sn
 import pandas as pd
-import matplotlib.pyplot as plt
-from utils import write_training_result
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -26,7 +25,7 @@ def load_inference_model(args):
   LOAD_PATH = args.load_path
   batch_size = args.batch_size
   validation_size = args.validation_size
-  
+
   feature_extract = False
 
   model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
