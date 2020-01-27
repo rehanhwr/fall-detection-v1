@@ -53,7 +53,7 @@ def load_inference_model(args):
   optimizer_ft.load_state_dict(checkpoint['optimizer_state_dict'])
 
   dataloaders_dict, sz_dict = load_split_train_test(data_dir, batch_size, input_size, validation_size)
-
+  model_ft = model_ft.to(device)
   model_ft.eval()
   criterion = nn.CrossEntropyLoss()
 
