@@ -73,7 +73,9 @@ def idx_to_data_name(idx):
   return data[0], data[1], data[2], data[3] 
 
 
-def write_downloaded_data(sub, act, tri, cam):
+def write_downloaded_data(sub, act, tri, cam, det=None):
+  if det is not None:
+    string = '{},{},{},{} - not available\n'.format(sub, act, tri, cam)
   string = '{},{},{},{}\n'.format(sub, act, tri, cam)
   print('Write downloaded data: ', string)
   f = open('downloaded_data.csv', 'a')
@@ -106,6 +108,12 @@ def main(args):
     div_data = soup.find('div', attrs={'id': nsub+nact+ntri})
     anchor = div_data.find('a', href=True, text=ncam)
     
+    if anchor is None:
+      print('Data not available: ', nsub, nact, ntri, ncam)
+      write_downloaded_data(nsub, nact, ntri, ncam, "NA")
+      next_idx+=1
+      continue
+
     url = anchor['href']
     output_path = SAVE_PATH + '/new_dataset/' + nsub + '/' + nact + '/' + ntri + '/' + ncam + '/' 
     
