@@ -74,10 +74,10 @@ def idx_to_data_name(idx):
 
 
 def write_downloaded_data(sub, act, tri, cam, det=None):
+  string = '{},{},{},{}\n'.format(sub, act, tri, cam)
   if det is not None:
     string = '{},{},{},{} - not available\n'.format(sub, act, tri, cam)
-  string = '{},{},{},{}\n'.format(sub, act, tri, cam)
-  print('Write downloaded data: ', string)
+  print('Write data data: ', string)
   f = open('downloaded_data.csv', 'a')
   f.write(string)
   f.close()
