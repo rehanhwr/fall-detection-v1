@@ -1,6 +1,7 @@
 from PIL import Image
 import os
 from utils import write_training_result
+from utils import parse_args
 
 activities = []
 for i in range(11):
