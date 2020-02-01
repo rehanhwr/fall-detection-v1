@@ -126,8 +126,9 @@ def continue_train_model(torch, model, dataloaders, criterion, optimizer, num_ep
         print('One batch completed in {:.0f}m {:.0f}s'.format(time_elapsed_batch // 60, time_elapsed_batch % 60))
         print()
 
-        SAVE_MODEL_PATH_BATCH = './saved_model/batch'+ str(batch_cnt) + '_epoch' + str(epoch) + "_saved_model.pth"
-        save_points(SAVE_MODEL_PATH_BATCH, epoch, model, optimizer, batch_cnt, phase, loss)
+        if batch_cnt % 10 == 0:
+          SAVE_MODEL_PATH_BATCH = './saved_model/batch'+ str(batch_cnt) + '_epoch' + str(epoch) + "_saved_model.pth"
+          save_points(SAVE_MODEL_PATH_BATCH, epoch, model, optimizer, batch_cnt, phase, loss)
 
         batch_cnt+=1
 
