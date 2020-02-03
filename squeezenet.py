@@ -11,6 +11,7 @@ from utils import write_training_result
 from utils import get_data_to_print
 from utils import accuracy_topk
 from utils import seed_torch
+from torchvision import models
 from continue_train_model import continue_train_model
 import time
 import copy
@@ -49,11 +50,18 @@ def main(args):
   if feature_extract:
     model_ft = torch.load(save_path)
   else:
-    model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
+    model_ft = models.vgg11_bn(pretrained=True)
+    num_ftrs = model_ft.classifier[6].in_features
+    model_ft.classifier[6] = nn.Linear(num_ftrs,num_classes)
+    input_size = 224
+
+    # temprorary, uncomment if you change the model to squeezenet again
+    # model_ft = torch.hub.load('pytorch/vision:v0.4.2', 'squeezenet1_0', pretrained=True)
 
   model_ft = set_parameter_requires_grad(model_ft, feature_extract)
-  model_ft.classifier[1] = nn.Conv2d(512, num_classes, kernel_size=(1,1), stride=(1,1))
-  model_ft.num_classes = num_classes
+  # temprorary, uncomment if you change the model to squeezenet again
+  # model_ft.classifier[1] = nn.Conv2d(512, num_classes, kernel_size=(1,1), stride=(1,1))
+  # model_ft.num_classes = num_classes
   # print(model)
 
   # Create training and validation dataloaders
@@ -108,7 +116,7 @@ def main(args):
   # plot_loss_acc(train_loss, val_acc, num_epochs)
 
 
-
+# TRAIN MODEL IN TRAINING PHASE AND VALIDATION PHASE IN THE SAME DATASET
 def train_model(model, dataloaders, criterion, optimizer, num_epochs, sz_dict):
   since = time.time()
 
